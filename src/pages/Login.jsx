@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 // import API from '../services/userAPI';
 import { createUser /* getUser  updateUser */ } from '../services/userAPI';
 // Para criar um novo perfil, utilize a função createUser,
@@ -16,64 +17,89 @@ class Login extends React.Component {
 
     this.state = {
       userName: '',
-      loginButtonDisabled: true,
+      buttonDisabled: true,
+      loading: false,
     };
+
+    this.validateButton = this.validateButton.bind(this);
   }
 
   componentDidMount() {
     console.log('componentDidMount');
-    // this.setState({ userName });
+  //   // this.setState({ userName });
   }
 
   componentDidUpdate(prevProps, prevState) {
     console.log('componentDidUpdate', this.state, prevState);
   }
+
   // shouldComponentUpdate(nextProps, nextState) {
   //   console.log('shouldComponentUpdate', this.state, nextState);
   //   return true;
   // }
+  onInputChange = (event) => {
+    const { value } = event.target;
+    this.setState(
+      {
+        userName: value,
+      },
+      () => this.loginButtonDisabled(this.state),
+    );
+  };
 
-  validateButton = () => {
+  loginButtonDisabled = () => {
     const { userName } = this.state;
     const minLength = 3;
 
     if (userName.length < minLength) {
-      return this.setState({ loginButtonDisabled: true });
+      return this.setState({ buttonDisabled: true });
     }
-    this.setState({ loginButtonDisabled: false });
+    this.setState({ buttonDisabled: false });
   };
 
-  onInputChange = ({ target }) => {
-    const { name } = target;
+  // criar uma função assíncrona que mude o estado do isLoading(true) e
+  // faça a requisição na API(await createUser)
+  // depois deve redirecionar pra /search
+  async validateButton() {
     this.setState({
-      [name]: target.value,
+      loading: true, // Primeiro parâmetro da setState()!
+    }, async () => {
+      const { userName } = this.state;
+      await createUser({ name: userName });
+      this.setState({
+        loading: false,
+      });
+      const { history } = this.props;
+      history.push('/search');
     });
-    this.validateButton();
-  };
+  }
 
   render() {
-    const { isLoading } = this.state;
-    const loadingElement = <span>Carregando...</span>;
+    // const { userName } = this.props;
+    const { userName, buttonDisabled, loading } = this.state;
     return (
       <div data-testid="page-login">
+        { loading && (<p>Carregando...</p>) }
         <form>
-          <label htmlFor="name-user">
+          <label htmlFor="userName">
+            Nome:
             <input
               data-testid="login-name-input"
-              name="name-user"
+              name="userName"
+              type="text"
               min="3"
+              value={ userName }
+              onChange={ this.onInputChange }
             />
-            Nome:
-            { isLoading
-              && loadingElement }
           </label>
           <button
             type="button"
             data-testid="login-submit-button"
-            //criar uma função assíncrona que mude o estado do isLoading(true) e faça a requisição na API(await createUser) 
-            //depois deve redirecionar pra /search
-            onClick={ createUser }
-            disabled={ this.validateButton }
+            // criar uma função assíncrona que mude o estado do isLoading(true) e faça a requisição na API(await createUser)
+            // depois deve redirecionar pra /search
+            onClick={ this.validateButton }
+            // onClick={ () => history.push('./pages/Search', this.state) }
+            disabled={ buttonDisabled }
           >
             Entrar
           </button>
@@ -82,5 +108,9 @@ class Login extends React.Component {
     );
   }
 }
+
+Login.propTypes = {
+  history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+};
 
 export default Login;

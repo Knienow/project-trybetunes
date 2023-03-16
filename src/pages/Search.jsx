@@ -1,5 +1,5 @@
 import React from 'react';
-import searchAlbum from '../services/searchAlbumsAPI';
+// import searchAlbum from '../services/searchAlbumsAPI';
 
 // O arquivo searchAlbumsAPI.js contém uma função que faz uma requisição a uma API e
 // retorna os álbuns de uma banda ou artista. Para essa função funcionar, ela recebe
@@ -16,10 +16,19 @@ class Search extends React.Component {
   }
 
   render() {
+    // const { history } = this.props;
+    // const { location } = history;
     return (
       <div data-testid="page-search">
-        {searchAlbum}
+
+        {/* <h1>Boas vindas,</h1>
+       <h2>
+      //     {
+      //       location.state ? location.state.userName : 'Pessoa desconhecida'
+      //     }
+         </h2> */}
       </div>
+      // { searchAlbum }
     );
   }
 }

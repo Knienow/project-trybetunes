@@ -25,10 +25,13 @@ class App extends React.Component {
 
     this.state = {
       // userName: '',
+      // buttonDisabled: true,
     };
   }
 
   render() {
+    // const { userName, history, buttonDisabled } = this.props;
+    // const { isLoading } = this.state;
     return (
       <Switch>
         <Route exact path="/" component={ Login } />
