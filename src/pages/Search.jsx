@@ -1,4 +1,5 @@
 import React from 'react';
+import Header from '../components/Header';
 // import searchAlbum from '../services/searchAlbumsAPI';
 
 // O arquivo searchAlbumsAPI.js contém uma função que faz uma requisição a uma API e
@@ -20,7 +21,7 @@ class Search extends React.Component {
     // const { location } = history;
     return (
       <div data-testid="page-search">
-
+        <Header />
         {/* <h1>Boas vindas,</h1>
        <h2>
       //     {

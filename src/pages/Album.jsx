@@ -1,5 +1,6 @@
 import React from 'react';
 import getMusics from '../services/musicsAPI';
+import Header from '../components/Header';
 // O arquivo musicsAPI.js contém a função getMusics que faz uma requisição a uma API
 // e retorna os as músicas de um álbum. Ela recebe como parâmetro uma string, que deve
 // ser o id do álbum. O retorno dessa função, quando encontra as informações,
@@ -31,6 +32,7 @@ class Album extends React.Component {
   render() {
     return (
       <div data-testid="page-album">
+        <Header />
         {getMusics}
       </div>
     );

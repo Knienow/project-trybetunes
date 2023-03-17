@@ -1,5 +1,6 @@
 import React from 'react';
 import { getFavoriteSongs, addSong, removeSong } from '../services/favoriteSongsAPI';
+import Header from '../components/Header';
 // O arquivo favoriteSongsAPI.js é responsável por manipular as informações das músicas
 // favoritas. Nele há as funções getFavoriteSongs, addSong e removeSong, que recuperam,
 // adicionam e removem músicas dos favoritos, respectivamente.
@@ -22,6 +23,7 @@ class Favorites extends React.Component {
   render() {
     return (
       <div data-testid="page-favorites">
+        <Header />
         {getFavoriteSongs}
         {addSong}
         {removeSong}
