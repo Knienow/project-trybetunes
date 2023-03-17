@@ -10,6 +10,7 @@ import { createUser /* getUser  updateUser */ } from '../services/userAPI';
 // atualizar as informações da pessoa logada, utilize a função updateUser.
 // Assim como a função anterior, ela também recebe um objeto com as informações que
 // serão atualizadas, esse objeto deve conter a mesma estrutura do anterior.
+import Loading from '../components/Loading';
 
 class Login extends React.Component {
   constructor() {
@@ -79,7 +80,7 @@ class Login extends React.Component {
     const { userName, buttonDisabled, loading } = this.state;
     return (
       <div data-testid="page-login">
-        { loading && (<p>Carregando...</p>) }
+        { loading && <Loading /> }
         <form>
           <label htmlFor="userName">
             Nome:
