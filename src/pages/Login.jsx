@@ -88,7 +88,6 @@ class Login extends React.Component {
               data-testid="login-name-input"
               name="userName"
               type="text"
-              min="3"
               value={ userName }
               onChange={ this.onInputChange }
             />

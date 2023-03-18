@@ -13,21 +13,58 @@ class Search extends React.Component {
   constructor() {
     super();
 
-    this.state = {};
+    this.state = {
+      artist: '',
+      buttonSearch: true,
+    };
   }
 
+  onInputChange = (event) => {
+    const { value } = event.target;
+    this.setState(
+      {
+        artist: value,
+      },
+      () => this.buttonSearchDisabled(this.state),
+    );
+  };
+
+  buttonSearchDisabled = () => {
+    const { artist } = this.state;
+    const minLength = 2;
+
+    if (artist.length < minLength) {
+      return this.setState({ buttonSearch: true });
+    }
+    this.setState({ buttonSearch: false });
+  };
+
   render() {
+    const { artist, buttonSearch } = this.state;
     // const { history } = this.props;
     // const { location } = history;
     return (
       <div data-testid="page-search">
         <Header />
-        {/* <h1>Boas vindas,</h1>
-       <h2>
-      //     {
-      //       location.state ? location.state.userName : 'Pessoa desconhecida'
-      //     }
-         </h2> */}
+        <form>
+          <label htmlFor="artistName">
+            <input
+              data-testid="search-artist-input"
+              name="artistName"
+              type="text"
+              value={ artist }
+              onChange={ this.onInputChange }
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="search-artist-button"
+            disabled={ buttonSearch }
+          >
+            Pesquisar
+
+          </button>
+        </form>
       </div>
       // { searchAlbum }
     );
