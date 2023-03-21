@@ -1,6 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
-// import searchAlbum from '../services/searchAlbumsAPI';
+import Loading from '../components/Loading';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
 
 // O arquivo searchAlbumsAPI.js contém uma função que faz uma requisição a uma API e
 // retorna os álbuns de uma banda ou artista. Para essa função funcionar, ela recebe
@@ -14,45 +17,75 @@ class Search extends React.Component {
     super();
 
     this.state = {
-      artist: '',
+      artistForm: '',
+      artistName: '',
+      artistAlbum: [],
+      existingAlbum: true,
       buttonSearch: true,
+      loading: false,
     };
   }
 
   onInputChange = (event) => {
-    const { value } = event.target;
+    const { name, value } = event.target;
     this.setState(
       {
-        artist: value,
+        [name]: value,
       },
       () => this.buttonSearchDisabled(this.state),
     );
   };
 
   buttonSearchDisabled = () => {
-    const { artist } = this.state;
+    const { artistForm } = this.state;
     const minLength = 2;
 
-    if (artist.length < minLength) {
+    if (artistForm.length < minLength) {
       return this.setState({ buttonSearch: true });
     }
     this.setState({ buttonSearch: false });
   };
 
+  searchArtist = async () => {
+    const { artistForm } = this.state;
+    this.setState({
+      loading: true,
+      artistForm: '',
+      artistName: artistForm, // Primeiro parâmetro da setState()!
+    }, async () => {
+      const searchAlbum = await searchAlbumsAPI(artistForm);
+      const album = searchAlbum.length > 0;
+      this.setState({
+        loading: false,
+        artistAlbum: searchAlbum,
+        existingAlbum: album,
+      });
+      // const { history } = this.props;
+      // history.push('/album/:id');
+    });
+  };
+
   render() {
-    const { artist, buttonSearch } = this.state;
+    const {
+      artistForm,
+      artistName,
+      artistAlbum,
+      existingAlbum,
+      buttonSearch,
+      loading,
+    } = this.state;
     // const { history } = this.props;
     // const { location } = history;
     return (
       <div data-testid="page-search">
         <Header />
         <form>
-          <label htmlFor="artistName">
+          <label htmlFor="artistForm">
             <input
               data-testid="search-artist-input"
-              name="artistName"
+              name="artistForm"
               type="text"
-              value={ artist }
+              value={ artistForm }
               onChange={ this.onInputChange }
             />
           </label>
@@ -60,15 +93,47 @@ class Search extends React.Component {
             type="button"
             data-testid="search-artist-button"
             disabled={ buttonSearch }
+            onClick={ this.searchArtist }
           >
             Pesquisar
 
           </button>
         </form>
+
+        { loading ? <Loading /> : (
+          <div>
+            {artistAlbum.length > 0 && (
+              <>
+                <h1>
+                  Resultado de álbuns de:
+                  {' '}
+                  { artistName }
+                </h1>
+                <div>
+                  { artistAlbum.map(({ collectionId, collectionName }) => (
+                    <Link
+                      to={ `/album/${collectionId}` }
+                      key={ collectionId }
+                      data-testid={ `link-to-album-${collectionId}` }
+                    >
+                      {collectionName}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        <div>
+          {!existingAlbum && <p>Nenhum álbum foi encontrado</p>}
+        </div>
       </div>
-      // { searchAlbum }
     );
   }
 }
+
+Search.propTypes = {
+  history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+};
 
 export default Search;
