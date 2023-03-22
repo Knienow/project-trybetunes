@@ -32,7 +32,13 @@ class MusicCard extends React.Component {
         isLoading(false);
       });
     }
-    await removeSong(music);
+
+    if (!checked) {
+      isLoading(true);
+      return removeSong(music).then(() => {
+        isLoading(false);
+      });
+    }
   };
 
   // musicSaved = async () => {
