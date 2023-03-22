@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { addSong, removeSong /* getFavoriteSongs */ } from '../services/favoriteSongsAPI';
+import { addSong, removeSong } from '../services/favoriteSongsAPI';
 
 // crie um componente chamado MusicCard que deverá exibir o nome da música
 // (propriedade trackName no objeto recebido pela API) e um player para tocar o
 // preview da música (propriedade previewUrl no objeto recebido pela API).
 
 class MusicCard extends React.Component {
-  async componentDidMount() {
-    // this.musicsLocalStorage();
-  }
-
   addToListOfFavorite = async (event) => {
     const { music, isLoading } = this.props;
     const { checked } = event.target;
@@ -23,20 +19,19 @@ class MusicCard extends React.Component {
     await removeSong(music);
   };
 
-  // musicsLocalStorage = async () => {
-  //   const getSongs = await getFavoriteSongs();
-  //   const getIdMusicSaved = getSongs.map((song) => song.trackId);
+  // musicSaved = async () => {
+  //   const songsList = await getFavoriteSongs();
+  //   const isSavedMusic = songsList.map((music) => music.trackId);
   //   this.setState({
-  //     checked: getIdMusicSaved,
+  //     checked: isSavedMusic,
   //   });
+  //   this.addToListOfFavorite();
   // };
 
   render() {
-    const { music: { trackId, trackName, previewUrl } } = this.props;
-
+    const { music: { trackId, trackName, previewUrl }, checked } = this.props;
     return (
       <div>
-
         <div key={ trackId }>
           <p>{trackName}</p>
           <audio
@@ -58,6 +53,7 @@ class MusicCard extends React.Component {
             id={ `inputFavorite-${trackId}` }
             name="inputFavorite"
             type="checkbox"
+            checked={ checked }
             value={ trackId }
             onClick={ this.addToListOfFavorite }
           />
@@ -73,13 +69,11 @@ MusicCard.propTypes = {
     previewUrl: PropTypes.string.isRequired,
     trackId: PropTypes.number.isRequired,
   }).isRequired,
-  // favorites: PropTypes.arrayOf(
-  //   PropTypes.shape({
-  //     trackName: PropTypes.string.isRequired,
-  //     previewUrl: PropTypes.string.isRequired,
-  //     trackId: PropTypes.number.isRequired,
-  //   }).isRequired,
-  // ).isRequired,
+  favoritesList: PropTypes.arrayOf({
+    trackName: PropTypes.string.isRequired,
+    previewUrl: PropTypes.string.isRequired,
+    trackId: PropTypes.number.isRequired,
+  }).isRequired,
 }.isRequired;
 
 export default MusicCard;

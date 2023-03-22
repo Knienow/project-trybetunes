@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
 import getMusics from '../services/musicsAPI';
 import Loading from '../components/Loading';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 // O arquivo musicsAPI.js contém a função getMusics que faz uma requisição a uma API
 // e retorna as músicas de um álbum. Ela recebe como parâmetro uma string, que deve
 // ser o id do álbum. O retorno dessa função, quando encontra as informações,
@@ -15,6 +16,7 @@ class Album extends React.Component {
   state = {
     dataAlbum: [],
     musics: [],
+    favoritesList: [],
     loadingMusic: false,
   };
 
@@ -24,10 +26,15 @@ class Album extends React.Component {
     getMusics(id).then((response) => {
       const dataAlbum = response[0];
       const musics = response.slice(1);
-      console.log('response', dataAlbum, musics);
+      // console.log('response', dataAlbum, musics);
       this.setState({
         dataAlbum,
         musics,
+      });
+    });
+    getFavoriteSongs().then((response) => {
+      this.setState({
+        favoritesList: response,
       });
     });
   }
@@ -39,7 +46,7 @@ class Album extends React.Component {
   };
 
   render() {
-    const { dataAlbum, musics, loadingMusic } = this.state;
+    const { dataAlbum, musics, loadingMusic, favoritesList } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
@@ -57,6 +64,9 @@ class Album extends React.Component {
                 key={ music.trackId }
                 isLoading={ this.changeLoadingState }
                 music={ music }
+                checked={ !!favoritesList.find(
+                  (element) => element.trackId === music.trackId,
+                ) }
               />);
             }
             return false;
