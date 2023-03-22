@@ -18,6 +18,7 @@ class Album extends React.Component {
     musics: [],
     favoritesList: [],
     loadingMusic: false,
+    loadingFavorites: true,
   };
 
   async componentDidMount() {
@@ -31,10 +32,10 @@ class Album extends React.Component {
         dataAlbum,
         musics,
       });
-    });
-    getFavoriteSongs().then((response) => {
+    }).then(() => getFavoriteSongs()).then((response) => {
       this.setState({
         favoritesList: response,
+        loadingFavorites: false,
       });
     });
   }
@@ -46,7 +47,13 @@ class Album extends React.Component {
   };
 
   render() {
-    const { dataAlbum, musics, loadingMusic, favoritesList } = this.state;
+    const {
+      dataAlbum,
+      musics,
+      loadingMusic,
+      favoritesList,
+      loadingFavorites,
+    } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
@@ -59,7 +66,7 @@ class Album extends React.Component {
             {dataAlbum.collectionName}
           </h2>
           { musics.map((music) => {
-            if (music) {
+            if (music && !loadingFavorites) {
               return (<MusicCard
                 key={ music.trackId }
                 isLoading={ this.changeLoadingState }

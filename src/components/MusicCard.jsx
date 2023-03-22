@@ -7,9 +7,25 @@ import { addSong, removeSong } from '../services/favoriteSongsAPI';
 // preview da música (propriedade previewUrl no objeto recebido pela API).
 
 class MusicCard extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      isChecked: false,
+    };
+  }
+
+  componentDidMount() {
+    const { checked } = this.props;
+    this.setState({
+      isChecked: checked,
+    });
+  }
+
   addToListOfFavorite = async (event) => {
     const { music, isLoading } = this.props;
     const { checked } = event.target;
+
     if (checked) {
       isLoading(true);
       return addSong(music).then(() => {
@@ -29,7 +45,8 @@ class MusicCard extends React.Component {
   // };
 
   render() {
-    const { music: { trackId, trackName, previewUrl }, checked } = this.props;
+    const { music: { trackId, trackName, previewUrl } } = this.props;
+    const { isChecked } = this.state;
     return (
       <div>
         <div key={ trackId }>
@@ -53,9 +70,15 @@ class MusicCard extends React.Component {
             id={ `inputFavorite-${trackId}` }
             name="inputFavorite"
             type="checkbox"
-            checked={ checked }
+            checked={ isChecked }
             value={ trackId }
             onClick={ this.addToListOfFavorite }
+            onChange={ (event) => {
+              const { checked } = event.target;
+              this.setState({
+                isChecked: checked,
+              });
+            } }
           />
         </div>
       </div>
