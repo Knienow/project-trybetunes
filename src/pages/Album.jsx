@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
-import Loading from '../components/Loading';
 import getMusics from '../services/musicsAPI';
+import Loading from '../components/Loading';
 // O arquivo musicsAPI.js contém a função getMusics que faz uma requisição a uma API
-// e retorna os as músicas de um álbum. Ela recebe como parâmetro uma string, que deve
+// e retorna as músicas de um álbum. Ela recebe como parâmetro uma string, que deve
 // ser o id do álbum. O retorno dessa função, quando encontra as informações,
 // é um array onde o primeiro elemento é um objeto com informações do álbum
 // e o restante dos elementos são as músicas do álbum.
@@ -13,65 +13,55 @@ import getMusics from '../services/musicsAPI';
 
 class Album extends React.Component {
   state = {
-    album: {},
-    albumList: [],
-    loading: false,
+    dataAlbum: [],
+    musics: [],
+    loadingMusic: false,
   };
 
   async componentDidMount() {
-    const { match: { params: { id } } } = this.props;
-    const returnAPI = await getMusics(id);
-    const album = returnAPI[0];
-    const albumList = returnAPI.filter((elem) => elem.kind === 'song');
-
-    this.availableAlbuns(albumList, album);
+    const { match } = this.props;
+    const { id } = match.params;
+    getMusics(id).then((response) => {
+      const dataAlbum = response[0];
+      const musics = response.slice(1);
+      console.log('response', dataAlbum, musics);
+      this.setState({
+        dataAlbum,
+        musics,
+      });
+    });
   }
 
-  availableAlbuns = (albumList, album) => {
+  changeLoadingState = (loadingMusic) => {
     this.setState({
-      albumList,
-      album,
+      loadingMusic,
     });
   };
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log('shouldComponentUpdate', this.state, nextState);
-  //   return true;
-  // }
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   console.log('componentDidUpdate', this.state, prevState);
-  // }
-
   render() {
-    const { album, albumList, loading } = this.state;
+    const { dataAlbum, musics, loadingMusic } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
-        {loading ? <Loading /> : (
-          <>
-            <div>
-              {album && (
-                <div>
-                  <h1 data-testid="artist-name">
-                    { album.artistName}
-                  </h1>
-                  <h2 data-testid="album-name">
-                    {album.collectionName}
-                  </h2>
-                </div>
-              )}
-            </div>
-            <div>
-              {albumList.map((music) => (
-                <MusicCard
-                  key={ music.trackName }
-                  music={ music }
-                />
-              ))}
-            </div>
-          </>
-        )}
+        {loadingMusic && <Loading /> }
+        <div>
+          <h1 data-testid="artist-name">
+            { dataAlbum.artistName}
+          </h1>
+          <h2 data-testid="album-name">
+            {dataAlbum.collectionName}
+          </h2>
+          { musics.map((music) => {
+            if (music) {
+              return (<MusicCard
+                key={ music.trackId }
+                isLoading={ this.changeLoadingState }
+                music={ music }
+              />);
+            }
+            return false;
+          })}
+        </div>
       </div>
     );
   }
@@ -83,6 +73,7 @@ Album.propTypes = {
       id: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
+
 };
 
 export default Album;
